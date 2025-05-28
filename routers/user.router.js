@@ -118,20 +118,50 @@ router.post("/otp-verify",otpController.verifyOTP);
 // router.post("/send-otp", UserController.sendOtp);
 // router.post("/verify-otp", UserController.verifyOtp);
 
+// router.post('/saveScore', async (req, res) => {
+//   try {
+//     const { _id, quiz1 } = req.body;
+
+//     const newScore = new UserModel({
+//       _id,
+      
+//       quiz1
+//     });
+
+//     await newScore.save();
+//     res.status(200).send('Score saved');
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Error saving score');
+//   }
+// });
+
+//router.post('/saveScore', UserController.saveScore);
 router.post('/saveScore', async (req, res) => {
   try {
     const { _id, quiz1 } = req.body;
 
-    const newScore = new UserModel({
+    const updatedUser = await UserModel.findByIdAndUpdate(
       _id,
-      
-      quiz1
-    });
+      { quiz1 },
+      { new: true } // Return the updated document
+    );
+    //await updatedUser.save();
+    // Update quiz1
+    updatedUser.quiz1 = quiz1;
 
-    await newScore.save();
+    // Recalculate final score manually
+    updatedUser.finalScore = (updatedUser.quiz1 || 0) + (updatedUser.quiz2 || 0) + (updatedUser.project || 0);
+
+    await updatedUser.save(); // Triggers
+
+    if (!updatedUser) {
+      return res.status(404).send('User not found');
+    }
+
     res.status(200).send('Score saved');
   } catch (err) {
-    console.error(err);
+    console.error('Saving error:', err.message);
     res.status(500).send('Error saving score');
   }
 });

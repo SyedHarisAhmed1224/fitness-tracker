@@ -35,19 +35,19 @@ const userSchema = new Schema({
         },
     quiz1: {
       type: Number,
-      defualt: 0
+      default: 0
     },
     quiz2: {
       type: Number,
-      defualt: 0
+      default: 0
     },
     project: {
       type: Number,
-      defualt: 0
+      default: 0
     },
     finalScore: {
       type: Number,
-      defualt: 0
+      default: 0
     }
 });
 
@@ -76,6 +76,9 @@ userSchema.pre('save', async function () {
         const salt = await bcrypt.genSalt(10);
         const hashpass = await bcrypt.hash(this.password, salt);
         this.password = hashpass;
+        
+    // Automatically calculate finalScore
+    this.finalScore = (this.quiz1 || 0) + (this.quiz2 || 0) + (this.project || 0);
       }
     } catch (error) {
       throw error;

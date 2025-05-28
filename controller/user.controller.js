@@ -292,6 +292,20 @@ exports.getAndUpdateStreak = async (req, res, next) => {
   }
 };
 
+
+
+exports.saveScore = async (req, res) => {
+  try {
+    const { _id, quiz1 } = req.body;
+
+    await UserService.saveScore(_id, quiz1);
+    res.status(200).send('Score saved');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error saving score');
+  }
+};
+
 const nodemailer = require("nodemailer");
 const UserModel = require('../model/user.model');
 

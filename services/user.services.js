@@ -351,6 +351,14 @@ static async updateStreak(_id) {
 }
 
 
+static async saveScore  (_id, quiz1)  {
+  const newScore = new UserModel({
+    _id,
+    quiz1,
+  });
+
+  return await newScore.save();
+};
 
 
 }
