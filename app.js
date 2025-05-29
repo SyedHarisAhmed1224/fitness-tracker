@@ -1,6 +1,6 @@
 const express = require('express');
 const body_parser = require('body-parser');
-const nodemailer = require("nodemailer");
+
 
 const userRouter = require('./routers/user.router');
 

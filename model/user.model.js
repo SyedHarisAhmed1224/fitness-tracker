@@ -22,33 +22,7 @@ const userSchema = new Schema({
         type:String,
         required:true,
     },
-    streak: { 
-        type: Number,
-         default: 0 
-        },
-    lastLogin: {
-         type: Date
-         },
-    bestStreak: { 
-        type: Number,
-         default: 0 
-        },
-    quiz1: {
-      type: Number,
-      default: 0
-    },
-    quiz2: {
-      type: Number,
-      default: 0
-    },
-    project: {
-      type: Number,
-      default: 0
-    },
-    finalScore: {
-      type: Number,
-      default: 0
-    }
+   
 });
 
 
@@ -76,9 +50,7 @@ userSchema.pre('save', async function () {
         const salt = await bcrypt.genSalt(10);
         const hashpass = await bcrypt.hash(this.password, salt);
         this.password = hashpass;
-        
-    // Automatically calculate finalScore
-    this.finalScore = (this.quiz1 || 0) + (this.quiz2 || 0) + (this.project || 0);
+    
       }
     } catch (error) {
       throw error;
