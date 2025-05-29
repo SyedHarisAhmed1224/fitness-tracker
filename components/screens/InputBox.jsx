@@ -1,41 +1,66 @@
-import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native'
+import { useState } from 'react';
+import { StyleSheet, View, Text, TextInput, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-export default function InputBox( {closeBox} ) {
+export default function InputBox({ closeBox, onAddRoutine }) {
+    const [name, setName] = useState('');
+    const [startValue, setStartValue] = useState('');
+    const [endValue, setEndValue] = useState('');
+
+    const handleAdd = () => {
+        const fill = Math.min(100, Math.max(0, parseInt(endValue))); // simple fill logic
+        const time = `${startValue}-${endValue}`;
+        const newRoutine = {
+            name,
+            time,
+            fill: isNaN(fill) ? 0 : fill,
+            url: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61' // default or random image
+        };
+        onAddRoutine(newRoutine);
+        closeBox();
+    };
+
     return (
-        <>
-            <View style={styles.inputBackground}>
-                <View style={styles.inputCard}>
-                    <TextInput style={styles.inputBox}
-                        placeholder="Routine"
-                        placeholderTextColor={'#A3A3A3'}
-                    />
+        <View style={styles.inputBackground}>
+            <View style={styles.inputCard}>
+                <TextInput
+                    style={styles.inputBox}
+                    placeholder="Routine"
+                    placeholderTextColor={'#A3A3A3'}
+                    value={name}
+                    onChangeText={setName}
+                />
+                <TextInput
+                    style={styles.inputBox}
+                    placeholder="Start Value"
+                    placeholderTextColor={'#A3A3A3'}
+                    value={startValue}
+                    onChangeText={setStartValue}
+                    keyboardType="numeric"
+                />
+                <TextInput
+                    style={styles.inputBox}
+                    placeholder="End Value"
+                    placeholderTextColor={'#A3A3A3'}
+                    value={endValue}
+                    onChangeText={setEndValue}
+                    keyboardType="numeric"
+                />
 
-                    <TextInput style={styles.inputBox}
-                        placeholder="Start Value"
-                        placeholderTextColor={'#A3A3A3'}
-                    />
+                <View style={styles.buttonView}>
+                    <TouchableOpacity style={styles.cancelButton} onPress={closeBox}>
+                        <Icon name="close" size={30} color="#A8A8A8" />
+                        <Text style={styles.cancelText}>Cancel</Text>
+                    </TouchableOpacity>
 
-                    <TextInput style={styles.inputBox}
-                        placeholder="End Value"
-                        placeholderTextColor={'#A3A3A3'}
-                    />
-
-                    <View style={styles.buttonView}>
-                        <TouchableOpacity style={styles.cancelButton} onPress={closeBox}>
-                            <Icon name="close" size={30} color="#A8A8A8" />
-                            <Text style={styles.cancelText}>Cancel</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={styles.addButton} onPress={closeBox}>
-                            <Icon name="add" size={30} color="#111" />
-                            <Text style={styles.addText}>Add</Text>
-                        </TouchableOpacity>
-                    </View>
+                    <TouchableOpacity style={styles.addButton} onPress={handleAdd}>
+                        <Icon name="add" size={30} color="#111" />
+                        <Text style={styles.addText}>Add</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
-        </>
-    )
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

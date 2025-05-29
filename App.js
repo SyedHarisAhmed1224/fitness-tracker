@@ -12,25 +12,19 @@ const Tab = createBottomTabNavigator();
 
 function AppTabs() {
   const { darkMode } = useContext(ThemeContext);
+  const tabStyles = getTabBarStyles(darkMode);
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
         headerShown: false,
-        tabBarActiveTintColor: '#C7F90D',
-        tabBarInactiveTintColor: '#888',
-        tabBarStyle: {
-          backgroundColor: darkMode ? '#111' : '#fff',
-          borderTopColor: darkMode ? '#222' : '#ccc',
-          height: 70,
-          paddingBottom: 10,
-          paddingTop: 10,
-        },
+        tabBarActiveTintColor: tabStyles.activeTintColor,
+        tabBarInactiveTintColor: tabStyles.inactiveTintColor,
+        tabBarStyle: tabStyles.tabBarStyle,
         tabBarIcon: ({ color }) => {
           let iconName;
 
           if (route.name === 'Exercise') iconName = 'barbell-outline';
-          else if (route.name === 'Food') iconName = 'restaurant-outline';
           else if (route.name === 'Settings') iconName = 'settings-outline';
 
           return <Icon name={iconName} size={24} color={color} />;
@@ -43,6 +37,18 @@ function AppTabs() {
     </Tab.Navigator>
   );
 }
+
+const getTabBarStyles = (darkMode) => ({
+  activeTintColor: darkMode ? '#C7F90D' : '#000000',
+  inactiveTintColor: darkMode ? '#888' : '#666',
+  tabBarStyle: {
+    backgroundColor: darkMode ? '#111' : '#fff',
+    borderTopColor: darkMode ? '#222' : '#ccc',
+    height: 70,
+    paddingBottom: 10,
+    paddingTop: 10,
+  },
+});
 
 export default function App() {
   return (
