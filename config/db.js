@@ -1,9 +1,19 @@
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
 
-const connection = mongoose.createConnection('mongodb://127.0.0.1:27017/FitnessTracker').on('open',()=>{
-    console.log("Mongodb Connected");
-}).on('error',()=>{
-    console.log("MongoDb connection error");
+// Create a new Sequelize instance with your MySQL credentials
+const sequelize = new Sequelize('TEMP', 'root', 'haris', {
+    host: 'localhost',
+    dialect: 'mysql',
+    logging: false, // Set true if you want SQL queries logged
 });
 
-module.exports = connection;
+// Test the connection
+sequelize.authenticate()
+    .then(() => {
+        console.log('MySQL Connected');
+    })
+    .catch(err => {
+        console.error('MySQL connection error:', err);
+    });
+
+module.exports = sequelize;

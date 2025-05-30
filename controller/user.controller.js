@@ -3,7 +3,7 @@
 // exports.register = async(req,res,next)=>{
 //     try{
 //         const {email,password}= req.body;
-        
+
 //         const successRes = await UserService.registerUser(email,password);
 //         res.json({status:true ,success:"User Registered Successfully"});
 
@@ -11,6 +11,9 @@
 //         throw error
 //     }
 // }
+const bcrypt = require('bcrypt');
+
+
 const UserService = require('../services/user.services');
 
 
@@ -19,10 +22,12 @@ exports.register = async (req, res, next) => {
   try {
     const { name, email, password, security } = req.body;
 
-    if (!name ||!email || !password  || !security) {
+    console.log("Request body -> " + req.body)
+
+    if (!name || !email || !password) {
       return res.status(400).send({ error: 'Name ,Email and password are required' });
     }
-
+  
     const user = await UserService.registerUser({ name, email, password, security });
 
     res.status(201).send({ message: 'User registered successfully', user });
@@ -34,11 +39,11 @@ exports.register = async (req, res, next) => {
 
 exports.add = async (req, res, next) => {
   try {
-    const { question, options} = req.body;
+    const { question, options } = req.body;
 
-   
 
-    const que = await QuestionService.addQuestion({ question,options});
+
+    const que = await QuestionService.addQuestion({ question, options });
 
     res.status(201).send({ message: 'question added successfully', que });
   } catch (error) {
@@ -92,61 +97,62 @@ exports.getAll = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-      const { email, password } = req.body;
-      if (!email || !password) {
-          throw new Error('Parameter are not correct');
-      }
-      let user = await UserService.checkUser(email);
-      if (!user) {
-          throw new Error('User does not exist');
-      }
-      const isPasswordCorrect = await user.comparePassword(password);
-      if (isPasswordCorrect === false) {
-          throw new Error(`Username or Password does not match`);
-      }
+    const { email, password } = req.body;
+    if (!email || !password) {
+      throw new Error('Parameter are not correct');
+    }
+    let user = await UserService.checkUser(email);
+    if (!user) {
+      throw new Error('User does not exist');
+    }
+    const isPasswordCorrect = await bcrypt.compare(password, user.password);
+    if (isPasswordCorrect === false) {
+      throw new Error(`Username or Password does not match`);
+    }
 
 
-      user.lastLogin = new Date();
-      await user.save();
-      // Creating Token
-      let tokenData;
-      tokenData = { _id: user._id, email: user.email, name: user.name , streak: user.streak , bestStreak : user.bestStreak
-        
-       };
-  
-      const token = await UserService.generateAccessToken(tokenData,"secret","1h")
-      res.status(200).json({ status: true, success: "sendData", token: token });
+    user.lastLogin = new Date();
+    await user.save();
+    // Creating Token
+    let tokenData;
+    tokenData = {
+      _id: user._id, email: user.email, name: user.name, streak: user.streak, bestStreak: user.bestStreak
+
+    };
+
+    const token = await UserService.generateAccessToken(tokenData, "secret", "1h")
+    res.status(200).json({ status: true, success: "sendData", token: token });
   } catch (error) {
-      console.log(error, 'err---->');
-      next(error);
+    console.log(error, 'err---->');
+    next(error);
   }
 };
 
 
-exports.getUserData = async (req, res ,next) => {
+exports.getUserData = async (req, res, next) => {
   try {
-    const {name, email} = req.body;
+    const { name, email } = req.body;
 
 
-    const user = await UserService.getUserData({ name, email});
-    res.json({status:true,success:user});
+    const user = await UserService.getUserData({ name, email });
+    res.json({ status: true, success: user });
 
-  res.status(201).send({ message: 'User Found heheh', user });
+    res.status(201).send({ message: 'User Found heheh', user });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: 'Internal Server Error' });
   }
 };
 
-exports.getUserData1 = async (req, res ,next) => {
+exports.getUserData1 = async (req, res, next) => {
   try {
-    const {_id} = req.body;
+    const { _id } = req.body;
 
 
-    const user = await UserService.getUserName({_id});
-    res.json({status:true,success:user});
+    const user = await UserService.getUserName({ _id });
+    res.json({ status: true, success: user });
 
-  res.status(201).send({ message: 'User Found heheh', user });
+    res.status(201).send({ message: 'User Found heheh', user });
   } catch (error) {
     console.error(error);
     res.status(500).send({ error: 'Internal Server Error' });
@@ -169,14 +175,14 @@ exports.getUserData1 = async (req, res ,next) => {
 
 
 
-exports.deleteUserData =  async (req,res,next)=>{
+exports.deleteUserData = async (req, res, next) => {
   try {
-      const { _id } = req.body;
-      let deletedData = await UserService.deleteUserData(_id);
-      res.json({status: true,success:deletedData});
+    const { _id } = req.body;
+    let deletedData = await UserService.deleteUserData(_id);
+    res.json({ status: true, success: deletedData });
   } catch (error) {
-      console.log(error, 'err---->');
-      next(error);
+    console.log(error, 'err---->');
+    next(error);
   }
 };
 
@@ -221,7 +227,7 @@ exports.newName = async (req, res, next) => {
     }
 
     // Check if the user exists
-     const user = await UserService.checkUser(email);
+    const user = await UserService.checkUser(email);
     if (!user) {
       return res.status(404).json({ error: 'User does not exist' });
     }
