@@ -60,18 +60,19 @@
 //   );
 // }
 
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+// App.js or Navigation.js
 
+import { NavigationContainer } from '@react-navigation/native';
 import { ThemeProvider } from './ThemeContext';
-import LoginSignUp from './components/screens/LoginSignUp';
+import RootNavigator from './components/screens/RootNavigator';
 
 export default function App() {
   return (
     <ThemeProvider>
       <NavigationContainer>
-        <LoginSignUp />
+        <RootNavigator />
       </NavigationContainer>
     </ThemeProvider>
   );
 }
+
